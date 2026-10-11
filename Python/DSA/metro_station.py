@@ -67,6 +67,16 @@ class MetroLine:
             print(current.name, end=" -> ")
             current = current.next
         print("END")
+
+    def searchStation(self, stationName):
+        current = self.head
+
+        while current is not None:
+            if current.name == stationName:
+                return f"✅ {current.name} is found!"
+            current = current.next
+
+        return f"❌ {stationName} is not found!!"
     
 
 dmtcl = MetroLine()
@@ -78,7 +88,14 @@ dmtcl.addStation("Karwan Bazar")
 dmtcl.addStation("Farmgate")
 dmtcl.addStation("Bijay Sarani")
 dmtcl.addStation("Agargaon")
+dmtcl.addStation("Shewrapara")
+dmtcl.addStation("Kazipara")
+dmtcl.addStation("Mirpur 10")
+dmtcl.addStation("Mirpur 11")
+dmtcl.addStation("Pallabi")
 
 dmtcl.displayStations()
 
 dmtcl.calculateFare("TSC", "Agargaon")
+
+print(dmtcl.searchStation("Pallabi"))
