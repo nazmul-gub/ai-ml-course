@@ -77,8 +77,53 @@ class MetroLine:
             current = current.next
 
         return f"❌ {stationName} is not found!!"
-    
 
+    def countStations(self):
+        current = self.head
+        count = 0
+
+        while current is not None:
+            count += 1
+            current = current.next
+
+        return f"Total stations: {count}"
+
+    def insertAfter(self, targetStation, newStation):
+        current = self.head
+
+        temp = Station(newStation)
+
+        while current is not None:
+            if(current.name == targetStation):
+                temp.next = current.next
+                current.next = temp
+
+            current = current.next
+
+    def removeStation(self, stationName):
+        # if metro line is empty
+        if self.head is None:
+            return
+
+        #if we want to delete the first station
+        if self.head.name == stationName:
+            self.head = self.head.next
+
+        #delete at any station
+
+        prev = self.head
+        current = self.head.next
+
+        while current is not None:
+            if current.name == stationName:
+                prev.next = current.next
+                return
+
+            prev = current
+            current = current.next
+
+
+        
 dmtcl = MetroLine()
 
 dmtcl.addStation("TSC")
@@ -94,8 +139,16 @@ dmtcl.addStation("Mirpur 10")
 dmtcl.addStation("Mirpur 11")
 dmtcl.addStation("Pallabi")
 
+# dmtcl.displayStations()
+
+# dmtcl.calculateFare("TSC", "Agargaon")
+
+# print(dmtcl.searchStation("Pallabi"))
+
+# print(dmtcl.countStations())
+
+dmtcl.insertAfter("Shahbagh", "New Market")
 dmtcl.displayStations()
 
-dmtcl.calculateFare("TSC", "Agargaon")
-
-print(dmtcl.searchStation("Pallabi"))
+dmtcl.removeStation("Shahbagh")
+dmtcl.displayStations()
