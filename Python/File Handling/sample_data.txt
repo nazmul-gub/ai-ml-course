@@ -1,0 +1,5 @@
+Hello world,
+This is Nazmul from Python
+I am learning python for data science
+I have also interest in AI agents
+But right now I am just focusing on python and SQL
