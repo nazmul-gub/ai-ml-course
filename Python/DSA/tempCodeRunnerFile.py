@@ -1,1 +1,1 @@
-nazmul.deleteValue(20)
+self.head = temp

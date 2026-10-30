@@ -73,7 +73,7 @@ class MetroLine:
 
         while current is not None:
             if current.name == stationName:
-                return f"✅ {current.name} is found!"
+                return f"✅ {current} is found!"
             current = current.next
 
         return f"❌ {stationName} is not found!!"
@@ -86,7 +86,7 @@ class MetroLine:
             count += 1
             current = current.next
 
-        return f"Total stations: {count}"
+        return count
 
     def insertAfter(self, targetStation, newStation):
         current = self.head
@@ -126,7 +126,8 @@ class MetroLine:
         
 dmtcl = MetroLine()
 
-dmtcl.addStation("TSC")
+dmtcl.addStation("Motijil")
+dmtcl.addStation("Bangladesh Secretariate")
 dmtcl.addStation("Dhaka University")
 dmtcl.addStation("Shahbagh")
 dmtcl.addStation("Karwan Bazar")
@@ -138,17 +139,96 @@ dmtcl.addStation("Kazipara")
 dmtcl.addStation("Mirpur 10")
 dmtcl.addStation("Mirpur 11")
 dmtcl.addStation("Pallabi")
+dmtcl.addStation("Uttara North")
+dmtcl.addStation("Uttara Center")
+dmtcl.addStation("Uttara South")
 
 # dmtcl.displayStations()
 
-# dmtcl.calculateFare("TSC", "Agargaon")
+# dmtcl.calculateFare("Pallabi", "Uttara")
 
 # print(dmtcl.searchStation("Pallabi"))
 
 # print(dmtcl.countStations())
 
-dmtcl.insertAfter("Shahbagh", "New Market")
-dmtcl.displayStations()
+# dmtcl.insertAfter("Shahbagh", "New Market")
+# dmtcl.displayStations()
 
-dmtcl.removeStation("Shahbagh")
-dmtcl.displayStations()
+# dmtcl.removeStation("Shahbagh")
+# dmtcl.displayStations()
+
+
+
+def runMetroApp(metro):
+    while True:
+        print("\n===== DHAKA METRO LINE =====")
+        print("1. Add station")
+        print("2. Display all stations")
+        print("3. Search station")
+        print("4. Count stations")
+        print("5. Calculate fare")
+        print("6. Insert station after another station")
+        print("7. Remove station")
+        print("0. Exit")
+
+        choice = input("Enter your choice: ").strip()
+
+        if choice == "1":
+            name = input("Enter station name: ").strip()
+
+            if name:
+                metro.addStation(name)
+
+        if choice == "2":
+            metro.displayStations()
+
+        if choice == "3":
+            searchingStation = input("Enter the station that you want to search??").strip()
+            result = metro.searchStation(searchingStation)
+
+            if result is not None:
+                print(f"Found station: {result.name}")
+            else:
+                print("Station not found!")
+
+        if choice == "4":
+            print(f"Total stations: {metro.countStations()}")
+
+        if choice == "5":
+            start = input("Enter starting station: ").strip()
+            end = input("Enter ending station: ").strip()
+
+            fare = metro.calculateFare(start, end)
+
+            if fare is None:
+                print("Invalid station name!")
+            else:
+                print(f"Total fare: ৳{fare}")
+
+
+        elif choice == "6":
+            target = input("Insert after which station? ").strip()
+            new_name = input("New station name: ").strip()
+            metro.insertAfter(target, new_name)
+
+        elif choice == "7":
+            name = input("Station to remove: ").strip()
+            metro.removeStation(name)
+
+        elif choice == "0":
+            print("Leaving Metro Line System. Goodbye!")
+            break
+        else:
+            print("Invalid choice! Please select an option from the menu.")
+
+
+runMetroApp(dmtcl)
+
+
+
+
+
+
+
+
+
