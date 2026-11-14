@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OOP in Python: Build a Banking App</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{--bg:#e6f4e8;--card:#fbfffb;--ink:#12341f;--mut:#4a6b57;--acc:#1f8a4c;--xp:#f2b705;--ok:#2f9e44;--bad:#c93a3a;--code:#0d2418;--codeink:#d8f5df;--line:#c2dfca;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1a10;--card:#11291a;--ink:#e4f6e8;--mut:#9cc3a6;--acc:#6fdc8c;--line:#24452f;--code:#07120b}}
+*{box-sizing:border-box}html{scroll-padding-top:90px}
+body{margin:0;background:var(--bg) linear-gradient(180deg,color-mix(in srgb,var(--acc) 14%,var(--bg)),var(--bg) 320px) no-repeat;color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.hb{max-width:900px;margin:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.hb b{font-size:17px;cursor:pointer}.bar{flex:1;min-width:120px;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--xp);transition:width .4s}
+.xp{font-weight:700;font-family:"JetBrains Mono",monospace}
+main{max-width:900px;margin:auto;padding:20px 16px 60px}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.15;margin:14px 0 8px}
+.lead{color:var(--mut);max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:20px 0}
+.tile{text-align:left;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:14px}
+.tile:hover{border-color:var(--acc)}.tile.done{border-color:var(--ok)}.tile b{display:block}.tile span{color:var(--mut);font-size:14px}
+.tile em{font-style:normal;color:var(--ok);font-weight:600;font-size:13px}
+.page{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px;margin:16px 0}
+h2{margin:0 0 6px;font-size:26px}h3{margin:20px 0 8px;font-size:17px}
+.why{color:var(--mut);margin:0 0 14px}.kid{background:color-mix(in srgb,var(--acc) 12%,var(--card));border-left:5px solid var(--acc);border-radius:8px;padding:12px 16px;max-width:70ch}.kid p{margin:0 0 10px}.kid p:last-child{margin:0}
+pre{background:var(--code);color:var(--codeink);padding:14px;border-radius:8px;overflow-x:auto;font:13.5px/1.55 "JetBrains Mono",monospace;margin:8px 0}
+.k{color:#ffa06b}.c{color:#7fa3a8;font-style:italic}.f{color:#8fe3b4}
+.viz{border:1px dashed var(--line);border-radius:8px;padding:14px;overflow-x:auto}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.box{border:2px solid var(--acc);border-radius:6px;padding:6px 12px;font:600 13px "JetBrains Mono",monospace;text-align:center;background:var(--card)}
+.box.s{border-color:var(--ok)}.box.x{border-color:var(--xp)}.box.e{border-color:var(--bad)}.box small{display:block;font-weight:400;color:var(--mut)}
+.arr{color:var(--mut);font-size:18px}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--acc);background:var(--acc);color:#fff;padding:7px 14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button:not(.g):not(.opt):not(.tile){color:#06181a}}
+button.g{background:transparent;color:var(--acc)}
+select,input{font:inherit;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:130px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--xp);outline-offset:2px}
+.out{font:13px "JetBrains Mono",monospace;margin-top:8px;color:var(--mut);min-height:20px;text-align:center}
+.quiz{margin-top:24px;border-top:2px solid var(--xp);padding-top:6px}
+.q{margin:14px 0}.q p{margin:0 0 8px;font-weight:600}
+.opt{display:block;width:100%;text-align:left;margin:5px 0;background:transparent;color:var(--ink);border:1px solid var(--line)}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}
+.opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,transparent)}
+.fb{font-size:14px;color:var(--mut);margin-top:4px}
+.badge{margin-top:10px;font-weight:700;color:var(--ok)}
+.pn{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.toast{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--xp);color:#12303a;font-weight:700;padding:8px 14px;border-radius:8px;opacity:0;transform:translateY(10px);transition:.3s;z-index:20}
+.toast.on{opacity:1;transform:none}
+</style></head><body>
+<header><div class="hb"><b id="home">🏦 OOP Bank</b><div class="bar"><i id="bar"></i></div><span class="xp" id="xp">0 XP</span><span id="lvl"></span><button class="g" id="reset">Reset</button></div></header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+<script>
+const S=[
+{id:"c1",t:"Classes and objects",kid:"<p>Imagine a cookie cutter shaped like a star. The cutter is not a cookie, it is the <b>plan</b> for making cookies. Every time you press it into dough, you get a brand-new cookie. In Python, the cutter is a <b>class</b> and each cookie is an <b>object</b>.</p><p>Our bank has a class called <code>BankAccount</code>. It says: every account needs an owner and some money, and it can do things like <code>deposit</code>. When Alice opens an account, Python presses the cutter once and makes Alice’s own account. When Bob opens one, he gets a different cookie. Alice’s money is hers, and Bob’s is his.</p><p>The word <code>self</code> just means “this very account”. So when we say <code>alice.deposit(100)</code>, <code>self</code> is Alice’s account, and only her money grows.</p><p>Let’s go slowly, step by step. First, we write the class one time. That is like drawing the plan for the cookie cutter. Second, we use the plan as many times as we like. Each time, Python makes a fresh object and tucks it into its own little space in the computer’s memory.</p><p>Inside every object there are two kinds of things. The first kind is called <b>attributes</b>. These are like the facts on a name tag: the owner’s name and the balance. The second kind is called <b>methods</b>. These are the things the account knows how to do, such as saving money. Facts are what it <i>has</i>, and methods are what it <i>does</i>.</p><p>There is one more helper called <code>__init__</code>. Think of it as the welcome party when a new account is born. The moment you open an account, Python runs <code>__init__</code> automatically, and it writes the owner’s name and the starting money onto the new account. If you do not give a starting amount, we can say it is zero, so a new account starts empty like a fresh piggy bank.</p><p><b>Remember it like this:</b> class = plan, object = real thing, attributes = what it has, methods = what it does, <code>self</code> = this one. Once you understand this, every other chapter is just adding new tricks to the same idea!</p>",why:"A class is the blueprint for “a bank account”. Each customer’s account is an object with its own balance.",
+ ex:"A class bundles data (attributes such as <code>owner</code>, <code>balance</code>) with behaviour (methods such as <code>deposit</code>). <code>__init__</code> runs when an account is opened, and <code>self</code> is that specific account. Two accounts never share their attribute values.",
+ code:`class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner            # attribute
+        self.balance = balance
+
+    def deposit(self, amount):        # method
+        self.balance += amount
+
+alice = BankAccount("Alice", 500)     # object 1
+bob = BankAccount("Bob")              # object 2
+alice.deposit(100)
+print(alice.balance, bob.balance)     # 600 0`,
+ viz:'create',
+ q:[["In alice.deposit(100), what is self?",["The BankAccount class","The alice object","Bob’s account","The number 100"],1,"self is the object the method is called on."],
+    ["After alice.deposit(100), what is bob.balance (opened with 0)?",["100","600","0","Error"],2,"Each object keeps its own attributes."]]},
+{id:"c2",t:"Encapsulation",kid:"<p>Think about a piggy bank. You can drop coins in through the slot, and you can ask a grown-up to open the bottom when you want to spend them. But nobody just reaches inside and grabs the coins whenever they like. The slot and the bottom plug are the safe doors.</p><p>That is <b>encapsulation</b>: wrapping the important stuff inside a protective shell, and giving people only safe doors to use. In our bank, the money lives in a private box called <code>__balance</code>. The safe doors are <code>deposit()</code> and <code>withdraw()</code>.</p><p>The withdraw door is like a careful guard. It says “No!” if you try to take out a negative amount, or more than you have. Without the guard, a sneaky person could type <code>balance = 9999</code> and become rich in one second. With encapsulation, the bank stays safe and the numbers stay honest. You can still <b>look</b> at your balance, but you cannot change it by cheating.</p><p>Let’s picture the bank as a house with a locked treasure room. Outside the house there is a front desk with friendly workers. You can walk up to the desk and say, “Please put this money in,” or “May I take some out?” The worker checks the rules and then goes into the treasure room for you. You are never allowed to walk in yourself. Programmers call the locked room <b>private</b> and the front desk the <b>public</b> part.</p><p>In Python, we make something private by putting two underscores in front of its name. Python then hides it with a secret disguise, so outside code cannot find it easily. There is also a gentler rule: a single underscore means “please do not touch, this is only for the class,” like a sign on a door.</p><p>Why do grown-ups care so much? Because mistakes and mischief happen. If anyone could change the balance directly, one tiny typing slip could make a million dollars appear, or vanish. When all changes go through <code>withdraw()</code>, the rules are checked every single time, in one place. If we ever need to change a rule, we fix it in one spot instead of hunting everywhere.</p><p><b>Remember it like this:</b> hide the treasure, show the front desk, and let the guard check every request. Safe doors keep everybody’s money happy!</p>",why:"Nobody should be able to type <code>account.balance = 9999</code>. Protect the money behind safe methods.",
+ ex:"A double underscore (<code>__balance</code>) hides the attribute from outside code through name mangling. A read-only <code>@property</code> lets people see the balance, and <code>withdraw</code> validates every change.",
+ code:`class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.__balance = balance      # private
+
+    @property
+    def balance(self):                # read-only view
+        return self.__balance
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
+        if amount > self.__balance:
+            raise ValueError("Insufficient funds")
+        self.__balance -= amount
+
+acct = BankAccount("Alice", 500)
+acct.withdraw(200)                    # balance is now 300
+acct.balance = 9999                   # AttributeError`,
+ viz:'enc',
+ q:[["Why make __balance private?",["To make code slower","So changes go only through validated methods","To hide the owner","Python requires it"],1,"Validation in withdraw() can’t be bypassed."],
+    ["A @property with no setter is…",["Writable","Read-only","Deleted","Abstract"],1,"Assigning to it raises AttributeError."]]},
+{id:"c3",t:"Inheritance",kid:"<p>You probably look a little like your parents. You may have your mum’s smile or your dad’s curly hair, without anyone having to build those from scratch. You <b>inherited</b> them! And you also have your own special things that your parents do not.</p><p>Classes work the same way. We write a parent class, <code>Account</code>, that knows the basics every account needs: an owner, a balance, and how to deposit. Then we make children. A <code>SavingsAccount</code> is an <code>Account</code> that also has an interest rate. A <code>CurrentAccount</code> is an <code>Account</code> that also has an overdraft limit.</p><p>The children get all the parent’s skills for free, so we never copy and paste the same code twice. The magic word <code>super()</code> means “first, do what my parent does”, and then the child adds its own special extras. Less typing, fewer mistakes!</p><p>Let’s build a family tree for our bank. At the top sits the grandparent-style class, <code>Account</code>. It knows only the things every account in the world needs. Below it sit the children: <code>SavingsAccount</code>, <code>CurrentAccount</code>, and you could easily add a <code>StudentAccount</code> later. Each child writes only what makes it different, and everything else flows down from the top automatically.</p><p>Why is that so nice? Imagine the bank decides deposits must also be written in a diary. If every account had its own copy of <code>deposit</code>, you would need to fix three places, and you might forget one. With inheritance you fix <code>deposit</code> once in <code>Account</code>, and every child gets the improvement at the same time. It is like changing the family recipe, and suddenly everyone’s dinner tastes better.</p><p>A child can also <b>override</b> something. That means it keeps the same name but does it in its own way, just like you might eat pasta your own way even though everyone in the family has pasta. We will see this again in the polymorphism chapter.</p><p>A small tip for naming: we say a savings account <b>is an</b> account. If that sentence sounds right, inheritance is probably the right tool.</p><p><b>Remember it like this:</b> parent shares, child adds, <code>super()</code> asks the parent first.</p>",why:"Savings and current accounts share most behaviour. Write it once in a parent, then specialise.",
+ ex:"A child class gets everything from its parent. <code>super().__init__()</code> runs the parent’s setup, then the child adds what is special: an interest rate or an overdraft limit.",
+ code:`class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+class SavingsAccount(Account):
+    def __init__(self, owner, balance=0, rate=0.04):
+        super().__init__(owner, balance)   # reuse parent setup
+        self.rate = rate
+
+class CurrentAccount(Account):
+    def __init__(self, owner, balance=0, overdraft=500):
+        super().__init__(owner, balance)
+        self.overdraft = overdraft
+
+s = SavingsAccount("Ann", 1000)
+s.deposit(50)                              # inherited method`,
+ viz:'<div class="row"><div class="box x">Account<small>owner, balance, deposit()</small></div></div><div class="row"><span class="arr">↑ inherits</span></div><div class="row"><div class="box s">SavingsAccount<small>+ rate</small></div><div class="box s">CurrentAccount<small>+ overdraft</small></div><div class="box s">StudentAccount<small>+ no fees</small></div></div>',
+ q:[["Which class would hold deposit() so both children reuse it?",["SavingsAccount","CurrentAccount","Account (parent)","Neither"],2,"Shared behaviour belongs in the parent."],
+    ["What does super().__init__(owner, balance) do?",["Deletes the parent","Runs the parent constructor","Makes balance private","Creates a second object"],1,"It sets owner and balance using the parent’s code."]]},
+{id:"c4",t:"Polymorphism",kid:"<p>It is a long word, but a simple idea. Imagine a teacher says “Make a sound!” to a cat, a dog and a cow. The teacher says the <b>same words</b> to each animal, yet the cat says meow, the dog says woof, and the cow says moo. Same request, different answers, and the teacher does not need to know how each animal does it.</p><p>That is <b>polymorphism</b>, which means “many shapes”. At the end of every month our bank says <code>month_end()</code> to each account. A savings account answers by adding a little interest, like a plant growing. A current account answers by taking a small fee.</p><p>The bank worker just says the same magic words to everyone, and each account knows what to do. This makes programs short and friendly, because we do not need lots of “if this type, then that type” questions.</p><p>Let’s go to the bank on the last day of the month. A friendly robot walks down the hallway and knocks on every account’s door, saying the same thing: <code>month_end()</code>. Behind the first door lives a savings account. It hears the words and happily grows a little, like a flower soaking up sunshine. Behind the second door lives a current account. It hears the same words and pays a small fee, like paying for a bus ticket. The robot does not know or care which is which. It just knocks and says the words.</p><p>That is a big deal for programmers. Without polymorphism, the robot would need a long list of questions: “Are you savings? Are you current? Are you business?” Every time the bank invented a new account type, someone would need to rewrite the robot. With polymorphism, a new account type just learns to answer <code>month_end()</code> and the robot keeps working, with zero changes.</p><p>This works because each class has its own version of the method. The words match, but the actions can be completely different. Python also does not mind if two classes are not related at all, as long as both know the right method. People call this <b>duck typing</b>: if it walks like a duck and quacks like a duck, we treat it like a duck!</p><p><b>Remember it like this:</b> same words, different actions, and the caller never has to ask who is who.</p>",why:"At month end the bank calls one method on every account. Savings pays interest, current charges a fee.",
+ ex:"Different classes implement the same method name, each behaving its own way. The bank’s loop does not need to know which account type it holds.",
+ code:`class SavingsAccount(Account):
+    def month_end(self):
+        self.balance += self.balance * self.rate / 12   # interest
+
+class CurrentAccount(Account):
+    def month_end(self):
+        self.balance -= 5                               # maintenance fee
+
+accounts = [SavingsAccount("Ann", 1200), CurrentAccount("Raj", 1200)]
+for a in accounts:
+    a.month_end()                     # same call, different result
+    print(type(a).__name__, round(a.balance, 2))
+# SavingsAccount 1204.0
+# CurrentAccount 1195`,
+ viz:'poly',
+ q:[["Polymorphism here means…",["Accounts share memory","One method name, class-specific behaviour","Accounts are private","Python converts types"],1,"month_end() does different things per class."],
+    ["Does the loop need to check the account type?",["Yes, with if/else","No, each object knows what to do","Only for savings","Only for current"],1,"That is the point: no type checks needed."]]},
+{id:"c5",t:"Abstraction (ABC)",kid:"<p>Imagine a recipe card that says: “Every birthday cake must have a flavour and a topping.” The card does not tell you which flavour, because that is your choice. But if you hand in a cake with no topping, the card says, “Sorry, this one is not finished!”</p><p>An <b>abstract class</b> is that kind of rule card. Our bank has an <code>Account</code> rule card that says: “Every account type must say what its monthly fee is.” You can never open a plain <code>Account</code>, because it is only the rule, not a real thing. It is like trying to eat the word “cake”.</p><p>A <code>BusinessAccount</code> follows the rule by saying its fee is 20. A <code>Broken</code> account forgot, so Python stops it straight away with an error. This catches mistakes early, before anyone loses money!</p><p>Let’s imagine a toy factory. The boss writes a checklist: “Every toy that leaves this factory must have batteries and a box.” The checklist is not a toy, and nobody can play with a checklist. But every real toy, like a robot or a train, must follow it before it is allowed on the shelf. If a worker forgets the box, the inspector stops the toy at the door.</p><p>An <b>abstract class</b> is the checklist, and Python is the inspector. We build it with <code>ABC</code> and mark the required jobs with <code>@abstractmethod</code>. These marked methods have no real body, only three dots, because the checklist says <i>what</i> must be done, not <i>how</i>. Each child class has to fill in the how.</p><p>Why is this useful? In a big bank, many programmers write many account types. Without a checklist, one person might forget <code>monthly_fee</code>, and the mistake would only appear months later when the bank tried to charge customers. With an abstract class, the mistake shows up the very second someone tries to create that account. Early errors are cheap errors!</p><p>Abstraction also means we can think about the big picture. When we use any account, we only need to know that it has a monthly fee. We do not need to know the tiny details of how it is worked out, just like you can ride a bike without knowing how the gears are made.</p><p><b>Remember it like this:</b> the abstract class is the rule, the child is the real thing, and Python is the strict inspector.</p>",why:"A bank can’t open a plain “Account”. Every real type must define its own fee rule.",
+ ex:"An abstract base class declares what children must implement with <code>@abstractmethod</code>. It cannot be instantiated, and a child that forgets a method fails immediately.",
+ code:`from abc import ABC, abstractmethod
+
+class Account(ABC):
+    def __init__(self, owner, balance=0):
+        self.owner, self.balance = owner, balance
+
+    @abstractmethod
+    def monthly_fee(self):            # contract
+        ...
+
+class BusinessAccount(Account):
+    def monthly_fee(self):
+        return 20
+
+class Broken(Account):
+    pass                              # forgot monthly_fee
+
+Account("x")      # TypeError: abstract class
+Broken("x")       # TypeError: missing monthly_fee
+BusinessAccount("Acme").monthly_fee()   # 20`,
+ viz:'<div class="row"><div class="box x">Account (ABC)<small>monthly_fee() required</small></div></div><div class="row"><span class="arr">↓ must implement</span></div><div class="row"><div class="box s">BusinessAccount ✓<small>fee = 20</small></div><div class="box e">Broken ✗<small>no monthly_fee</small></div></div>',
+ q:[["What happens on Account('x') when Account is an ABC with an abstract method?",["Works normally","TypeError","Balance becomes 0","A warning"],1,"Abstract classes can’t be instantiated."],
+    ["Why use an ABC in a banking system?",["Faster execution","Every account type is guaranteed to define the required methods","Hides balances","Auto-saves data"],1,"The contract is enforced when the object is created."]]},
+{id:"c6",t:"Magic (dunder) methods",kid:"<p>Imagine you invent a brand-new toy and want it to work with the things kids already know: counting, comparing, and adding. Python lets you teach your own objects some <b>magic words</b>. They have two underscores on each side, like <code>__add__</code>, so we call them “dunder” methods (double-underscore).</p><p>Say we make a <code>Money</code> object. If we teach it <code>__add__</code>, we can write <code>Money(50) + Money(25)</code> and get <code>Money(75)</code>, just like adding apples. If we teach it <code>__lt__</code> (less than), a list of money can be put in order from smallest to biggest.</p><p>A <code>Statement</code> that knows <code>__len__</code> can answer “how many transactions?” using plain <code>len()</code>. And <code>__repr__</code> teaches the object how to introduce itself nicely when printed. You never call these magic words yourself. Python calls them for you.</p><p>Let’s see why this is exciting. Numbers already know how to do many things. They can be added, compared and printed. But your own objects are new, so by default Python has no idea what <code>Money(50) + Money(25)</code> should mean. It would shrug and say, “I don’t understand.” The dunder methods are how we teach it.</p><p>Here is a little guide to the most useful magic words. <code>__init__</code> is the setup when something is born. <code>__repr__</code> is how the object introduces itself when you print it, so you see <code>Money(75)</code> instead of a confusing code. <code>__add__</code> teaches the plus sign. <code>__eq__</code> teaches the double equals, so Python can say whether two amounts are the same. <code>__lt__</code> teaches the less-than sign, and once it is learned, <code>sorted()</code> can line up a list from smallest to biggest. <code>__len__</code> teaches the word <code>len()</code>, and <code>__getitem__</code> teaches square brackets, so <code>statement[0]</code> gives the first transaction.</p><p>Why do banks and data scientists love these? Because the code reads like plain English. Adding two deposits with a plus sign is much easier to understand than a long method name. It makes your objects feel like they truly belong to Python.</p><p><b>Remember it like this:</b> double underscores mean Python will call it for you. You teach the magic word once, and everyone can use the shortcut forever.</p>",why:"Let your own objects work with +, ==, sorting, len() and printing, like built-in numbers and lists.",
+ ex:"<code>__add__</code> enables <code>+</code>, <code>__eq__</code> and <code>__lt__</code> enable comparison and sorting, <code>__len__</code> and <code>__getitem__</code> make a statement behave like a list, and <code>__repr__</code> makes printing readable.",
+ code:`class Money:
+    def __init__(self, amt): self.amt = amt
+    def __add__(self, o): return Money(self.amt + o.amt)
+    def __eq__(self, o): return self.amt == o.amt
+    def __lt__(self, o): return self.amt < o.amt
+    def __repr__(self): return f"Money({self.amt})"
+
+class Statement:
+    def __init__(self, txs): self.txs = txs
+    def __len__(self): return len(self.txs)
+    def __getitem__(self, i): return self.txs[i]
+
+print(Money(50) + Money(25))          # Money(75)
+print(sorted([Money(30), Money(10)])) # [Money(10), Money(30)]
+st = Statement([Money(5), Money(9)])
+print(len(st), st[0])                 # 2 Money(5)`,
+ viz:'<div class="row"><div class="box">m1 + m2<small>→ __add__</small></div><div class="box">m1 == m2<small>→ __eq__</small></div><div class="box">sorted(list)<small>→ __lt__</small></div><div class="box">len(statement)<small>→ __len__</small></div><div class="box">print(m)<small>→ __repr__</small></div></div>',
+ q:[["Which dunder makes Money(50) + Money(25) work?",["__init__","__add__","__len__","__call__"],1,"+ calls __add__ on the left object."],
+    ["For sorted() to order Money objects you need…",["__lt__","__del__","__init__ only","__repr__"],0,"sorted() compares with &lt;, which calls __lt__."]]},
+{id:"c7",t:"Composition",kid:"<p>Think of a toy castle built from blocks. The castle is not a block, but it <b>has</b> blocks inside it: towers, walls and a gate. Each block is simple, and together they make something big and amazing. Building one thing out of smaller things is called <b>composition</b>.</p><p>Our bank is built like that. A <code>Bank</code> has accounts. Each <code>Account</code> has a list of <code>Transaction</code> notes, like little receipts. The bank does not do everything itself. When you ask it to transfer money, it simply tells one account “take money out” and tells the other “put money in”.</p><p>Inheritance says “is a”, like a savings account <i>is an</i> account. Composition says “has a”, like a bank <i>has</i> accounts. Grown-up programmers love composition because you can swap a single block without breaking the whole castle.</p><p>Let’s look inside the bank, layer by layer, like opening a set of nesting dolls. The biggest doll is the <code>Bank</code>. Inside it we find a collection of <code>Account</code> dolls, one for each customer. Open an account, and inside you find a list of small <code>Transaction</code> dolls, each one a tiny note saying what happened and how much. Every doll does only its own job, and each one trusts the doll inside it to do its job well.</p><p>This idea is called <b>delegation</b>, which is a fancy word for “pass the work to the right helper”. When you ask the bank to transfer money, the bank does not mess with anybody’s balance by itself. It says to the first account, “You handle taking money out, including all your rules,” and to the second, “You handle putting it in.” If the first account says “Insufficient funds,” the whole transfer stops before any money moves. Each account protects itself.</p><p>So how do you choose between “is a” and “has a”? Ask a silly question. “Is a bank an account?” No! “Does a bank have accounts?” Yes! That tells you to use composition. Most real programs use much more composition than inheritance, because small parts are easy to test, fix and swap, just like replacing one block in the castle.</p><p><b>Remember it like this:</b> big things are made of small things, and each small thing takes care of itself.</p>",why:"A bank has accounts, and an account has transactions. Build big systems from small objects.",
+ ex:"Composition means one object holds others (“has-a”). <code>Bank</code> owns accounts and delegates work to them, so each class stays small and testable.",
+ code:`class Transaction:
+    def __init__(self, kind, amount):
+        self.kind, self.amount = kind, amount
+
+class Account:
+    def __init__(self, owner, balance=0):
+        self.owner, self.balance = owner, balance
+        self.history = []                      # has-a list of Transaction
+
+    def deposit(self, amt):
+        self.balance += amt
+        self.history.append(Transaction("deposit", amt))
+
+    def withdraw(self, amt):
+        self.balance -= amt
+        self.history.append(Transaction("withdraw", amt))
+
+class Bank:
+    def __init__(self, name):
+        self.name, self.accounts = name, {}    # has-a accounts
+
+    def open_account(self, acct_id, acct):
+        self.accounts[acct_id] = acct
+
+    def transfer(self, src, dst, amt):
+        self.accounts[src].withdraw(amt)       # delegate
+        self.accounts[dst].deposit(amt)`,
+ viz:'<div class="row"><div class="box x">Bank</div></div><div class="row"><span class="arr">has-a ↓</span></div><div class="row"><div class="box s">Account A<small>Alice</small></div><div class="box s">Account B<small>Bob</small></div></div><div class="row"><span class="arr">has-a ↓</span></div><div class="row"><div class="box">Transaction<small>deposit 100</small></div><div class="box">Transaction<small>withdraw 40</small></div></div>',
+ q:[["Bank holding a dict of Account objects is…",["Inheritance","Composition","Abstraction","Overriding"],1,"Bank has accounts; it is not an account."],
+    ["Why does transfer() call withdraw() and deposit()?",["To avoid classes","Each account manages its own rules and history","It is faster","Python requires it"],1,"Delegation keeps validation in one place."]]},
+{id:"c8",t:"Decorators and special methods: property, classmethod, dataclass and more",more:[
+{h:'More tool 1: @property (getter, setter, computed value)',p:`A property looks like a plain attribute but runs code behind the scenes. The getter reads, the setter validates, and a computed property works out a value on the fly. Use it without brackets: <code>acct.is_rich</code>.`,c:`class Account:
+    def __init__(self, balance=0):
+        self._balance = balance
+
+    @property
+    def balance(self):                 # getter: acct.balance
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):          # setter: acct.balance = 50
+        if value < 0:
+            raise ValueError('Balance cannot be negative')
+        self._balance = value
+
+    @property
+    def is_rich(self):                 # computed, no ()
+        return self._balance > 10000`},
+{h:'More tool 2: @cached_property (calculate once, remember)',p:`Some answers are slow to work out, like adding up ten years of transactions. <code>cached_property</code> does the work the first time and remembers the answer.`,c:`from functools import cached_property
+
+class Statement:
+    def __init__(self, amounts):
+        self.amounts = amounts
+
+    @cached_property
+    def total(self):
+        print('adding...')
+        return sum(self.amounts)
+
+s = Statement([10, 20, 30])
+print(s.total)    # adding... 60
+print(s.total)    # 60  (no recalculation)`},
+{h:'More tool 3: @dataclass options (frozen, order, field)',p:`<code>frozen=True</code> makes objects unchangeable, like a receipt. <code>order=True</code> lets you compare them. <code>field(default_factory=list)</code> gives every customer their own empty list, so lists are never shared by mistake.`,c:`from dataclasses import dataclass, field
+
+@dataclass(frozen=True, order=True)
+class Money:
+    amount: float
+    currency: str = 'USD'
+
+@dataclass
+class Customer:
+    name: str
+    accounts: list = field(default_factory=list)
+
+print(Money(5) < Money(9))     # True
+Money(5).amount = 1            # FrozenInstanceError`},
+{h:'More tool 4: @total_ordering (write two, get four)',p:`Write <code>__eq__</code> and <code>__lt__</code>, and Python fills in <code>&lt;=</code>, <code>&gt;</code> and <code>&gt;=</code> for you.`,c:`from functools import total_ordering
+
+@total_ordering
+class Loan:
+    def __init__(self, amt): self.amt = amt
+    def __eq__(self, o): return self.amt == o.amt
+    def __lt__(self, o): return self.amt < o.amt
+
+print(Loan(5) <= Loan(9), Loan(9) > Loan(5))   # True True`},
+{h:'More tool 5: __str__, __repr__, __bool__, __contains__, __iter__',p:`<code>__str__</code> is the friendly text for customers, <code>__repr__</code> is the exact text for developers. <code>__bool__</code> powers <code>if statement:</code>, <code>__contains__</code> powers <code>in</code>, and <code>__iter__</code> lets you loop over your object.`,c:`class Statement:
+    def __init__(self, txs): self.txs = txs
+    def __str__(self): return f'Statement with {len(self.txs)} items'
+    def __repr__(self): return f'Statement({self.txs})'
+    def __bool__(self): return len(self.txs) > 0     # if st:
+    def __contains__(self, x): return x in self.txs  # 50 in st
+    def __iter__(self):                              # for t in st:
+        for t in self.txs:
+            yield t
+
+st = Statement([50, 75])
+print(st, 50 in st, bool(st))   # Statement with 2 items True True`},
+{h:'More tool 6: context managers (__enter__ and __exit__)',p:`A <code>with</code> block sets something up, then always cleans up, even if an error happens. Here a transfer rolls the balance back if it fails.`,c:`class SafeTransfer:
+    def __init__(self, acct): self.acct = acct
+
+    def __enter__(self):
+        self.backup = self.acct.balance    # remember the money
+        return self.acct
+
+    def __exit__(self, exc_type, exc, tb):
+        if exc_type:                       # something went wrong
+            self.acct.balance = self.backup
+        return False                       # still show the error
+
+with SafeTransfer(acct) as a:
+    a.balance -= 100
+    raise RuntimeError('network down')     # balance is restored`},
+{h:'More tool 7: writing your own decorator',p:`A decorator wraps a function to add extra behaviour, like a gift wrapper. This one logs every call, and the <code>@</code> line is just a shortcut for wrapping.`,c:`def log_call(func):
+    def wrapper(*args, **kwargs):
+        print('calling', func.__name__)
+        return func(*args, **kwargs)
+    return wrapper
+
+class Account:
+    def __init__(self): self.balance = 0
+
+    @log_call
+    def deposit(self, amount):
+        self.balance += amount
+
+Account().deposit(50)     # prints: calling deposit`},
+{h:'More tool 8: custom exceptions',p:`Your own error classes inherit from <code>Exception</code>, so the bank can say exactly what went wrong.`,c:`class InsufficientFundsError(Exception):
+    def __init__(self, needed):
+        super().__init__(f'You need {needed} more')
+
+try:
+    raise InsufficientFundsError(40)
+except InsufficientFundsError as e:
+    print(e)              # You need 40 more`},
+{h:'Cheat sheet: which tool for which job?',p:`<b>@property</b>: safe attribute-style access. <b>@cached_property</b>: slow value, calculated once. <b>@classmethod</b>: another way to build an object. <b>@staticmethod</b>: helper that needs no object. <b>@dataclass</b>: data holder without boilerplate. <b>@abstractmethod</b>: rule children must follow. <b>@total_ordering</b>: full comparisons from two methods. <b>__enter__ / __exit__</b>: safe set-up and clean-up. <b>Custom decorator</b>: add behaviour to many functions at once.`}
+],kid:"<p>Here are three handy helpers, like tools in a school pencil case.</p><p><b>@classmethod</b> is a shortcut for making things. Imagine ordering a pizza from a menu with a button that says “Make me the usual”. <code>Account.from_dict()</code> does that: you hand it a little note with the owner’s name and money, and it builds the whole account for you.</p><p><b>@staticmethod</b> is like a ruler. It lives in the pencil case, but it does not belong to any one drawing. <code>is_valid_amount()</code> just checks “is this number bigger than zero?”, and it does not need any particular account.</p><p><b>@dataclass</b> is a sticker maker. For simple notes like a <code>Transaction</code> (what happened, how much, and a message) Python writes all the boring setup code for you. You just list the labels, and it does the rest!</p><p>Let’s meet each helper again with a bank story. Say the bank receives a list of new customers from a file. Each customer is a little note with a name and a balance. Writing a long setup line for every note would be boring. With <code>from_dict</code>, you give the class a note and it builds the account in one step. We call this an <b>alternative constructor</b>, which means “another way to make one”. It gets the word <code>cls</code> instead of <code>self</code>, because it works with the whole class, not with one existing account.</p><p>Next is the static method. A teacher’s ruler can measure any drawing, and it does not belong to one drawing. In the same way, <code>is_valid_amount</code> can check any number, and it does not need to look at any account. We keep it inside the class only so it is easy to find, like keeping the ruler in the same pencil case. It receives neither <code>self</code> nor <code>cls</code>.</p><p>Finally, the dataclass. Without it, you must write the setup code and the printing code for a <code>Transaction</code> by hand every time, and it is the same boring code over and over. With <code>@dataclass</code> you only write the labels and their types, and Python writes the rest. You even get a nice printout and a free comparison. You can also give a label a starting value, like an empty note.</p><p><b>Remember it like this:</b> classmethod builds, staticmethod helps, dataclass saves typing. Together they keep your bank code short, tidy and easy to read!</p><p><b>Bonus tools below the code!</b> There are even more helpers. <code>@property</code> lets a number look like a simple label while a guard checks it. <code>@cached_property</code> is a memory trick: do the hard sum once, then remember it. A <b>context manager</b> is like a safety net under a trapeze, because if something falls, the net catches it and puts everything back. And a <b>decorator</b> is a gift wrapper you can put around any function to add something extra, like writing a diary line each time it runs.</p>",why:"The extra decorators and special methods that make bank code short, safe and tidy: property, cached_property, classmethod, staticmethod, dataclass, context managers and more.",
+ ex:"<code>@classmethod</code> receives the class and acts as an alternative constructor. <code>@staticmethod</code> is a utility with no <code>self</code>. <code>@dataclass</code> generates <code>__init__</code> and <code>__repr__</code> for plain data holders such as transactions.",
+ code:`from dataclasses import dataclass
+
+@dataclass
+class Transaction:
+    kind: str
+    amount: float
+    note: str = ""
+
+class Account:
+    def __init__(self, owner, balance=0):
+        self.owner, self.balance = owner, balance
+
+    @classmethod
+    def from_dict(cls, d):                 # alternative constructor
+        return cls(d["owner"], d["balance"])
+
+    @staticmethod
+    def is_valid_amount(x):                # utility, no self/cls
+        return x > 0
+
+acct = Account.from_dict({"owner": "Mia", "balance": 250})
+print(Account.is_valid_amount(-5))         # False
+print(Transaction("deposit", 40))
+# Transaction(kind='deposit', amount=40, note='')`,
+ viz:'<div class="row"><div class="box">@classmethod<small>from_dict() builds accounts</small></div><div class="box">@staticmethod<small>is_valid_amount()</small></div><div class="box x">@dataclass<small>Transaction auto __init__</small></div></div>',
+ q:[["Account.from_dict(data) should be a…",["staticmethod","classmethod","property","dunder"],1,"It needs cls to create an instance."],
+    ["What does @dataclass generate?",["Database tables","__init__ and __repr__","Interest rates","Encryption"],1,"It removes boilerplate for data holders."],
+    ["Which decorator lets acct.is_rich be used without brackets while running code?",["@staticmethod","@property","@classmethod","@abstractmethod"],1,"A property runs a method but is read like an attribute."],
+    ["What does frozen=True do on a dataclass?",["Speeds it up","Fields cannot be changed after creation","Makes it abstract","Deletes the class"],1,"Frozen objects are read-only, like a printed receipt."],
+    ["What is __exit__ useful for in a with-block?",["Starting the program","Cleaning up or rolling back, even after an error","Renaming variables","Making a subclass"],1,"It always runs at the end, so it can undo or tidy up."]]}
+];
+const KEY="bankoop_v1";let st={xp:0,done:{},ans:{}};
+try{const r=localStorage.getItem(KEY);if(r)st=JSON.parse(r)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function hl(c){return esc(c).replace(/(#.*$)|\b(class|def|return|for|in|if|import|from|print|raise|self|super|True|False|None|pass|with|try|except|yield)\b|(@\w+)/gm,(m,a,b)=>a?'<span class="c">'+m+'</span>':b?'<span class="k">'+m+'</span>':'<span class="f">'+m+'</span>')}
+const MAX=S.reduce((a,s)=>a+s.q.length*10+10,0);
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove("on"),1400)}
+function hud(){const l=Math.floor(st.xp/60)+1,n=["Trainee","Teller","Analyst","Manager","Director","Banker-in-Chief"];
+ $("xp").textContent=st.xp+" XP";$("lvl").textContent="Lv "+l+" "+n[Math.min(l-1,5)];$("bar").style.width=Math.min(100,st.xp/MAX*100)+"%"}
+function vizHTML(v){
+ if(v==="create")return '<div class="row"><input id="nm" placeholder="Owner name" value="Alice"><button id="mk">Open account</button></div><div class="row" id="objs"></div><div class="out">Open a few accounts, then deposit into one. Only that object changes.</div>';
+ if(v==="enc")return '<div class="row"><div class="box s" id="bal">balance: 500</div><input id="am" type="number" value="200" aria-label="Amount"><button id="wd">withdraw()</button><button class="g" id="hk">acct.balance = 9999</button></div><div class="out" id="eo">Try withdrawing 800, -5, or the direct assignment.</div>';
+ if(v==="poly")return '<div class="row"><select id="pm"><option>SavingsAccount</option><option>CurrentAccount</option></select><button id="pr">a.month_end()</button></div><div class="out" id="po">Both start at 1200. Pick a type and call the same method.</div>';
+ return v}
+function page(id){
+ const i=S.findIndex(s=>s.id===id);
+ if(i<0){ // home
+  const done=Object.keys(st.done).length;
+  $("app").innerHTML=`<h1>Learn object-oriented Python by building a bank</h1><p class="lead">Eight pages, one banking app. Each page explains a core OOP idea, shows the Python code, lets you try it, then ends with a quiz. A correct first try earns 10 XP, and finishing a quiz adds a 10 XP bonus. Progress: ${done} of ${S.length} chapters.</p><div class="grid">${S.map((s,k)=>`<button class="tile ${st.done[k]?"done":""}" data-go="${s.id}"><b>${k+1}. ${s.t}</b><span>${s.why}</span>${st.done[k]?"<br><em>Completed</em>":""}</button>`).join("")}</div>${done===S.length?`<div class="page"><h2>Final result</h2><p>${st.xp} of ${MAX} XP. ${st.xp===MAX?"Perfect score: you are Banker-in-Chief.":"Press Reset to retry for a perfect score."}</p></div>`:""}`;
+ }else{const s=S[i];
+  $("app").innerHTML=`<div class="page"><h2>${i+1}. ${s.t}</h2><p class="why">${s.why}</p><h3>🌱 Explained like you’re 8</h3><div class="kid">${s.kid}</div><h3>The technical idea</h3><p>${s.ex}</p><h3>Python code</h3><pre>${hl(s.code)}</pre>${(s.more||[]).map(m=>`<h3>${m.h}</h3><p>${m.p}</p>${m.c?`<pre>${hl(m.c)}</pre>`:''}`).join('')}<h3>Try it</h3><div class="viz">${vizHTML(s.viz)}</div>
+  <div class="quiz"><h3>Quiz: ${s.t}</h3>${s.q.map((q,j)=>`<div class="q"><p>${q[0]}</p>${q[1].map((o,k)=>`<button class="opt" data-j="${j}" data-k="${k}">${esc(o)}</button>`).join("")}<div class="fb" id="fb${j}"></div></div>`).join("")}<div class="badge" id="bd">${st.done[i]?"Chapter complete! +10 XP bonus":""}</div></div>
+  <div class="pn"><button class="g" data-go="${i?S[i-1].id:"home"}">← ${i?S[i-1].t:"Home"}</button><button data-go="${i<S.length-1?S[i+1].id:"home"}">${i<S.length-1?S[i+1].t+" →":"Finish →"}</button></div></div>`;
+  S[i].q.forEach((q,j)=>{const a=st.ans[i+"_"+j];if(a!==undefined)mark(i,j,a)});
+  wireChapter(i)}
+ document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));hud()}
+function go(id){try{location.hash=id}catch(e){}page(id);scrollTo(0,0)}
+function mark(i,j,k){const q=S[i].q[j];
+ document.querySelectorAll(`.opt[data-j="${j}"]`).forEach(b=>{b.disabled=true;const n=+b.dataset.k;if(n===q[2])b.classList.add("ok");else if(n===k)b.classList.add("no")});
+ $("fb"+j).innerHTML=(k===q[2]?"Correct. ":"Not quite. ")+q[3]}
+function wireChapter(i){
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const j=+b.dataset.j,k=+b.dataset.k,key=i+"_"+j;if(st.ans[key]!==undefined)return;
+  st.ans[key]=k;if(k===S[i].q[j][2]){st.xp+=10;toast("+10 XP")}mark(i,j,k);
+  if(S[i].q.every((q,x)=>st.ans[i+"_"+x]!==undefined)&&!st.done[i]){st.done[i]=1;st.xp+=10;$("bd").textContent="Chapter complete! +10 XP bonus";setTimeout(()=>toast("Chapter complete +10 XP"),900)}
+  save();hud()});
+ const mk=$("mk");if(mk){const accs=[];const draw=()=>{$("objs").innerHTML=accs.map((a,n)=>`<div class="box s">${esc(a.o)}<small>balance: ${a.b}</small><button class="g" data-d="${n}">deposit(100)</button></div>`).join("");
+   document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{accs[+b.dataset.d].b+=100;draw()})};
+  mk.onclick=()=>{accs.push({o:$("nm").value||"Customer",b:0});draw()}}
+ const wd=$("wd");if(wd){let bal=500;const sh=()=>$("bal").textContent="balance: "+bal;
+  wd.onclick=()=>{const a=+$("am").value;let m;if(a<=0)m="ValueError: Amount must be positive";else if(a>bal)m="ValueError: Insufficient funds";else{bal-=a;m="OK: withdrew "+a}sh();$("eo").textContent=m};
+  $("hk").onclick=()=>{$("eo").textContent="AttributeError: property 'balance' has no setter. Balance stays "+bal}}
+ const pr=$("pr");if(pr)pr.onclick=()=>{const m=$("pm").value==="SavingsAccount";
+  $("po").textContent=m?"SavingsAccount.month_end(): 1200 + 1200 × 0.04 / 12 = 1204.0":"CurrentAccount.month_end(): 1200 − 5 = 1195"}}
+$("reset").onclick=()=>{st={xp:0,done:{},ans:{}};save();go("home")};
+$("home").onclick=()=>go("home");
+addEventListener("hashchange",()=>page(location.hash.slice(1)));
+page(location.hash.slice(1));
+</script></body></html>
